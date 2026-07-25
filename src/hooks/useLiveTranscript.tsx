@@ -18,7 +18,8 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
         isFilterWordsRemoved,
         noSpeakers,
         speakerSensitivity,
-        isPartialTranscriptShown
+        isPartialTranscriptShown,
+        hideCurseWords
     } = liveTranscriptSettings;
 
     const {
@@ -83,7 +84,8 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
                     setCurrentSpeaker(detectedSpeaker);
                 }
 
-                const text = message.metadata.transcript.trim();
+                const isProfanity = message.results?.[0]?.alternatives?.[0].tags?.includes('profanity');
+                const text = isProfanity && hideCurseWords ? '*****' : message.metadata.transcript.trim();
 
                 setSegments(prev => {
                     if (!text) return prev;

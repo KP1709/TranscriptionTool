@@ -43,6 +43,10 @@ const Settings = ({ settings, setSettings, isSessionActive }: SettingsProps) => 
         updateSetting('isPartialTranscriptShown', checked === true);
     };
 
+    const handleCurseWordChange = (checked: boolean | "indeterminate") => {
+        updateSetting('hideCurseWords', checked === true);
+    };
+
     return (
         <form>
             <p className="text-sm text-muted-foreground mb-4">Once session has started, settings cannot be changed</p>
@@ -84,6 +88,16 @@ const Settings = ({ settings, setSettings, isSessionActive }: SettingsProps) => 
                                 name="partials"
                                 defaultChecked={false}
                                 onCheckedChange={handlePartialTranscriptChange}
+                                disabled={isSessionActive}
+                            />
+
+                            <FieldCheckbox
+                                id="curse"
+                                label="Hide curse words"
+                                checked={settings.hideCurseWords}
+                                name="curse"
+                                defaultChecked={false}
+                                onCheckedChange={handleCurseWordChange}
                                 disabled={isSessionActive}
                             />
                         </span>

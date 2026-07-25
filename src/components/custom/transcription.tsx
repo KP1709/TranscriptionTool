@@ -21,7 +21,8 @@ const Transcription = () => {
         isFilterWordsRemoved: false,
         noSpeakers: 2,
         speakerSensitivity: 0.5,
-        isPartialTranscriptShown: false
+        isPartialTranscriptShown: false,
+        hideCurseWords: true
     });
 
     const {

@@ -6,6 +6,7 @@ export type TranscriptSettingsType = {
     noSpeakers: number;
     speakerSensitivity: number;
     isPartialTranscriptShown: boolean;
+    hideCurseWords: boolean;
 };
 
 export type TranscriptSegment = {
