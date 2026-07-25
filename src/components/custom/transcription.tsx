@@ -118,7 +118,7 @@ const Transcription = () => {
                     </Tabs>
                 </div>
             ) : (
-                <div className='grid grid-cols-[1fr_2fr]'>
+                <div className='grid grid-cols-[1fr_2fr] border-r-2'>
                     <Tabs defaultValue="settings" className='border-r-2'>
                         <TabsList className="w-full">
                             <TabsTrigger value="speaker">Speaker</TabsTrigger>

@@ -14,7 +14,7 @@ const Transcript = ({ segments, rawTranscript, socketState, speakerLabels }: Tra
     return (
         <div className="relative">
             <ViewportScrollWrapper
-                className="h-[65vh] pr-3"
+                className="h-[65vh] pr-3 md:h-[85vh]"
                 scrollAreaClassName="h-full"
                 showScrollToBottomButton
                 scrollDependencies={[segments.length, rawTranscript]}
