@@ -7,9 +7,10 @@ React / Shadcn / Tailwind / Speechmatics / pnpm / Express (Backend) / Render (Ba
 ## 🍼 Introduction
 After working with my team to intergrate AI note taking into our web application, I wanted to explore other transcription services. I found Speechmatics and produced a simple demo to explore the features the service has to offer.  
   
-⚠️ The repo does not have a live demo attached due to using Speechmatics free tier which has limits. If your interested running this code locally, you will need to create a Speechmatics account, generate an API key and inject it into the server code. To run the demo, run the server script along side localhost from package.json.
+⚠️ This repo does not have a live demo attached due to using Speechmatics free tier which has limits. If you're interested in running this code locally, you will need to create a Speechmatics account, generate an API key and inject it into the server code. To run the demo, run the server script along side localhost from package.json.
 
 ## 🛠️ Features
+- View speech-to-text transcribing in real time
 - Configure transcription settings
     -  Filter out filler words (disfluencies) e.g. um, err
     -  Display partial transcription (the words it thinks it has detected before adding to the main transcript)
@@ -22,13 +23,13 @@ After working with my team to intergrate AI note taking into our web application
 - Microphone permission check before starting transcription
 
 ## Speechmatics
-The service uses websockets which means there is an open connection which sends messages (pings) to the server and receives messages (pongs) from the server.
-The logic for recording, transcribing and deteting server messages are provided by the Speechmatics JS SDKs.
+The live transcription service uses websockets which means there is an open connection which sends messages (pings) to the server and receives messages (pongs) from the server.
+The logic for recording, transcribing and detecting server messages are provided by the Speechmatics JS SDKs.
 
 ## Backend / Render
 Using Express, a small script was created to generate a JWT which was passed to the frontend to start transcribing.  
-This used Speechmatics auth library where the api key, transcription service type and time to live were set to produce a JWT. 
-In this repo, the server code exists to run the app locally. To host the server code in Render, a separate repo was created and the environment variable injected. 
+This uses Speechmatics' auth library where the API key, transcription service type and time to live are set to produce a JWT. 
+In this repo, the server code exists to run the app locally. To host the server code in Render, a separate repo needed to be created and the environment variables injected when deploying the backend. 
 
 ## 📚 Resources
 - Speechmatics - https://www.speechmatics.com/
