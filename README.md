@@ -1,20 +1,19 @@
 # Transcription Tool
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ba1b0c0e-1172-4c55-8bd7-39827e12ae57/deploy-status)](https://app.netlify.com/projects/kareenapatel-transcriptiontool/deploys)
 
-
 ## ⌨️ Tech stack
 React / Shadcn / Tailwind / Speechmatics / pnpm / Express (Backend) / Render (Backend)
 
 ## 🍼 Introduction
 After working with my team to intergrate AI note taking into our web application, I wanted to explore other transcription services. I found Speechmatics and produced a simple demo to explore the features the service has to offer.  
   
-⚠️ The repo does not have a live demo attached due to using Speechmatics free tier which has limits. If your interested runing this code locally, you will need to create a Speechmatics account, generate an API key and inject it into the server code. Go to package.json and run the server script along side localhost.
+⚠️ The repo does not have a live demo attached due to using Speechmatics free tier which has limits. If your interested running this code locally, you will need to create a Speechmatics account, generate an API key and inject it into the server code. To run the demo, run the server script along side localhost from package.json.
 
 ## 🛠️ Features
 - Configure transcription settings
     -  Filter out filler words (disfluencies) e.g. um, err
     -  Display partial transcription (the words it thinks it has detected before adding to the main transcript)
-    -  Adjust number of speakers, delays and speaker sensitivity
+    -  Adjust number of speakers, delays, speaker sensitivity and curse word (profanity) visibility
     -  Simple logging to show websocket messages and changes
 - Speaker diarization - detecting when a speaker changes
     - Adjust speaker labels
