@@ -131,52 +131,58 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
     });
 
     const start = useCallback(async () => {
-        const response = await fetch(
-            import.meta.env.VITE_JWT_TOKEN_URL
-            // http://localhost:3001/api/speechmatics-token <-- Local server
-        );
+        try {
+            const response = await fetch(
+                import.meta.env.VITE_JWT_TOKEN_URL
+                // http://localhost:3001/api/speechmatics-token <-- Local server
+            );
 
-        const { jwt } = await response.json();
+            const { jwt } = await response.json();
 
-        if (!jwt) {
-            logger.log('[SERVER][Token]', 'Token not valid or generated');
-            return;
-        }
-        logger.log('[SERVER][Token]', 'Token generated successfully');
+            if (!jwt) {
+                logger.log('[SERVER][Token]', 'Token not valid or generated');
+                return false;
+            }
+            logger.log('[SERVER][Token]', 'Token generated successfully');
 
-        await startTranscription(jwt, {
-            transcription_config: {
-                model: model,
-                max_delay: maxDelay,
-                language: "en",
-                output_locale: "en-GB",
-                enable_partials: isPartialTranscriptShown,
-                diarization: "speaker",
-                domain: domain === 'general' ? undefined : domain,
-                transcript_filtering_config: {
-                    "remove_disfluencies": isFilterWordsRemoved // Remove filler words like "um", "uh", etc.
+            await startTranscription(jwt, {
+                transcription_config: {
+                    model: model,
+                    max_delay: maxDelay,
+                    language: "en",
+                    output_locale: "en-GB",
+                    enable_partials: isPartialTranscriptShown,
+                    diarization: "speaker",
+                    domain: domain === 'general' ? undefined : domain,
+                    transcript_filtering_config: {
+                        "remove_disfluencies": isFilterWordsRemoved
+                    },
+                    speaker_diarization_config: {
+                        speaker_sensitivity: speakerSensitivity,
+                        max_speakers: noSpeakers
+                    }
                 },
-                speaker_diarization_config: {
-                    speaker_sensitivity: speakerSensitivity,
-                    max_speakers: noSpeakers
-                }
-            },
-            audio_format: {
-                type: "raw",
-                encoding: "pcm_f32le",
-                sample_rate: SAMPLE_RATE,
-            },
-        }).then(async () => {
+                audio_format: {
+                    type: "raw",
+                    encoding: "pcm_f32le",
+                    sample_rate: SAMPLE_RATE,
+                },
+            });
+
+            await startRecording({
+                recordingOptions: { sampleRate: SAMPLE_RATE }
+            });
+
             setIsSessionActive(true);
             logger.log('[SPEECHMATICS] - Transcription session started');
-            return startRecording({
-                recordingOptions: { sampleRate: SAMPLE_RATE }
-            }).then(() => {
-                logger.log("[AUDIO] - Recording started");
-            }).catch(() => logger.log('[AUDIO] - Recording unable to start'));
-        }).catch((err) => {
-            logger.log('[SPEECHMATICS] - Transcription failed', err);
-        });
+            logger.log("[AUDIO] - Recording started");
+            return true;
+        } catch (err) {
+            setIsSessionActive(false);
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            logger.log('[SPEECHMATICS] - Transcription failed', errorMessage);
+            return false;
+        }
     }, [startTranscription, startRecording, liveTranscriptSettings]);
 
     const stop = useCallback(async () => {

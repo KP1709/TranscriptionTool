@@ -60,8 +60,12 @@ const Transcription = () => {
             return;
         }
 
-        await startTranscribing();
-        startTimer();
+        const isTranscriptionStart = await startTranscribing();
+
+        if (isTranscriptionStart) {
+            startTimer();
+        }
+
         setIsSettingUp(false);
     };
 
