@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import useLiveTranscript from "@/hooks/useLiveTranscript";
 import useCountdownTimer from "@/hooks/useCountdownTimer";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CountdownTimer from "./countdownTimer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LoggerConsole from "./logger";
@@ -31,7 +31,6 @@ const Transcription = () => {
         start: startTranscribing,
         stop: stopTranscribing,
         segments,
-        rawTranscript,
         isSessionActive,
     } = useLiveTranscript(liveTrancriptSettings);
 
@@ -40,6 +39,12 @@ const Transcription = () => {
     const { error, requestPermission } = useMicrophonePermissions();
     const [speakerLabels, setSpeakerLabels] = useState<Record<string, string>>({});
     const [isSettingUp, setIsSettingUp] = useState(false);
+
+    const rawTranscript = useMemo(() => {
+        return segments
+            .map(segment => `${speakerLabels[segment.speaker] ?? segment.speaker}: ${segment.text}`)
+            .join("\n\n");
+    }, [segments, speakerLabels]);
 
     useEffect(() => {
         reset();
@@ -152,16 +157,22 @@ const Transcription = () => {
                                 />
                             </TabsContent>
                         </div>
+
                         <div className='flex flex-row items-center justify-between h-[5vh]'>
                             <Button variant='default' onClick={isRecording ? handleStopRecording : handleStartRecording}>
                                 {isRecording ? "Stop" : "Start"} Transcribing
                                 {isSettingUp && "..."}
                             </Button>
 
+                            <Button variant='default' onClick={() => { console.log('[TEST]:', rawTranscript); }}>
+                                Raw transcript
+                            </Button>
+
                             <span className='mr-8'>
                                 <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopTranscribing} />
                             </span>
                         </div>
+
                     </Tabs>
                     <div className='p-2'>
                         <Transcript
@@ -179,6 +190,10 @@ const Transcription = () => {
                     <Button variant='default' onClick={isRecording ? handleStopRecording : handleStartRecording}>
                         {isRecording ? "Stop" : "Start"} Transcribing
                         {isSettingUp && "..."}
+                    </Button>
+
+                    <Button variant='default' onClick={() => { console.log('[TEST]:', rawTranscript); }}>
+                        Raw transcript
                     </Button>
 
                     <span className='mr-8'>

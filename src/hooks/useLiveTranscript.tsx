@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRealtimeTranscription, useRealtimeEventListener, } from "@speechmatics/real-time-client-react";
 import { usePCMAudioRecorderContext, usePCMAudioListener, } from "@speechmatics/browser-audio-input-react";
 import { logger } from "@/lib/logger";
@@ -41,13 +41,6 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
         if (!sessionId) return;
         logger.log('[SPEECHMATICS][SessionId]', `Session id:${sessionId}`);
     }, [sessionId]);
-
-    // ? For summaries in the future (speaker dirization might help for context)
-    const rawTranscript = useMemo(() => {
-        return segments
-            .map(segment => `${segment.speaker}: ${segment.text}`)
-            .join("\n\n");
-    }, [segments]);
 
     useRealtimeEventListener("receiveMessage", (event) => {
         const message = event.data;
@@ -199,7 +192,6 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
         start,
         isRecording,
         segments,
-        rawTranscript,
         currentSpeaker,
         isSessionActive,
         sessionId
