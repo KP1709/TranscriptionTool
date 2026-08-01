@@ -30,6 +30,7 @@ const Transcription = () => {
         socketState,
         start: startTranscribing,
         stop: stopTranscribing,
+        stopSession,
         segments,
         isSessionActive,
     } = useLiveTranscript(liveTrancriptSettings);
@@ -169,7 +170,7 @@ const Transcription = () => {
                             </Button>
 
                             <span className='mr-8'>
-                                <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopTranscribing} />
+                                <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopSession} />
                             </span>
                         </div>
 
@@ -197,7 +198,7 @@ const Transcription = () => {
                     </Button>
 
                     <span className='mr-8'>
-                        <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopTranscribing} />
+                        <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopSession} />
                     </span>
                 </div>
             )}
