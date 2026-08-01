@@ -12,6 +12,9 @@ type TranscriptProps = {
 };
 
 const Transcript = ({ segments, rawTranscript, isRecording, isSessionActive, speakerLabels }: TranscriptProps) => {
+    const hasTranscriptStarted = segments.length > 0 || rawTranscript.trim().length > 0;
+    const shouldShowStoppedMessage = !isRecording && isSessionActive && hasTranscriptStarted;
+
     return (
         <div className="relative">
             <ViewportScrollWrapper
@@ -39,7 +42,7 @@ const Transcript = ({ segments, rawTranscript, isRecording, isSessionActive, spe
                         </div>
                     ))}
 
-                    {!isRecording && isSessionActive && (
+                    {shouldShowStoppedMessage && (
                         <Marker variant="separator" role="status">
                             <MarkerContent>Transcription has stopped</MarkerContent>
                         </Marker>

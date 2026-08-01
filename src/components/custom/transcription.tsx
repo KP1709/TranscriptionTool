@@ -59,7 +59,7 @@ const Transcription = () => {
 
     const handleStartRecording = async () => {
         if (minutes === 0 && seconds === 0) {
-            logger.log('[ACTION] - Timer has expired. Unable to start recording.');
+            logger.log('[ACTION] - Timer has expired', 'Unable to start recording');
             return;
         };
         setIsSettingUp(true);
