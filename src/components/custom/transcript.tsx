@@ -6,11 +6,12 @@ import type { TranscriptSegment } from "@/types";
 type TranscriptProps = {
     segments: TranscriptSegment[];
     rawTranscript: string;
-    socketState?: string | null;
+    isRecording: boolean;
+    isSessionActive: boolean;
     speakerLabels: Record<string, string>;
 };
 
-const Transcript = ({ segments, rawTranscript, socketState, speakerLabels }: TranscriptProps) => {
+const Transcript = ({ segments, rawTranscript, isRecording, isSessionActive, speakerLabels }: TranscriptProps) => {
     return (
         <div className="relative">
             <ViewportScrollWrapper
@@ -38,7 +39,7 @@ const Transcript = ({ segments, rawTranscript, socketState, speakerLabels }: Tra
                         </div>
                     ))}
 
-                    {socketState === "closed" && (
+                    {!isRecording && isSessionActive && (
                         <Marker variant="separator" role="status">
                             <MarkerContent>Transcription has stopped</MarkerContent>
                         </Marker>

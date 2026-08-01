@@ -1,19 +1,26 @@
-import { Button } from "@/components/ui/button";
-import useLiveTranscript from "@/hooks/useLiveTranscript";
-import useCountdownTimer from "@/hooks/useCountdownTimer";
 import { useEffect, useMemo, useState } from "react";
-import CountdownTimer from "./countdownTimer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import LoggerConsole from "./logger";
 import Speaker from "./TabScreens/speaker";
 import Settings from "./TabScreens/settings";
 import Transcript from "./transcript";
-import type { TranscriptSettingsType } from "@/types";
-import useMicrophonePermissions from "@/hooks/useMicrophonePermissions";
+import TranscriptActions from "./transcriptActions";
+
 import { logger } from "@/lib/logger";
+import type { TranscriptSettingsType } from "@/types";
+
+import useMicrophonePermissions from "@/hooks/useMicrophonePermissions";
+import useLiveTranscript from "@/hooks/useLiveTranscript";
+import useCountdownTimer from "@/hooks/useCountdownTimer";
 import useBreakpoint from "@/hooks/useBreakpoint";
+import useClipboard from "@/hooks/useClipboard";
+import useFileDownload from "@/hooks/useFileDownload";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Transcription = () => {
+    const [speakerLabels, setSpeakerLabels] = useState<Record<string, string>>({});
+    const [isSettingUp, setIsSettingUp] = useState<boolean | null>(null);
     const [liveTrancriptSettings, setLiveTranscriptSettings] = useState<TranscriptSettingsType>({
         model: 'standard',
         maxDelay: 0.7,
@@ -27,23 +34,22 @@ const Transcription = () => {
 
     const {
         isRecording,
-        socketState,
         start: startTranscribing,
         stop: stopTranscribing,
-        stopSession,
         segments,
         isSessionActive,
     } = useLiveTranscript(liveTrancriptSettings);
 
     const width = useBreakpoint();
     const { reset, start: startTimer, stop: stopTimer, minutes, seconds } = useCountdownTimer(120);
+    const { copy, error: copyError } = useClipboard();
     const { error, requestPermission } = useMicrophonePermissions();
-    const [speakerLabels, setSpeakerLabels] = useState<Record<string, string>>({});
-    const [isSettingUp, setIsSettingUp] = useState(false);
+    const { saveAsMarkdown, saveAsTxt, saveAsJson, isDownloading, isError, error: downloadError } = useFileDownload();
+
 
     const rawTranscript = useMemo(() => {
         return segments
-            .map(segment => `${speakerLabels[segment.speaker] ?? segment.speaker}: ${segment.text}`)
+            .map(segment => `[${speakerLabels[segment.speaker] ?? segment.speaker}]: ${segment.text}`)
             .join("\n\n");
     }, [segments, speakerLabels]);
 
@@ -51,8 +57,11 @@ const Transcription = () => {
         reset();
     }, []);
 
-
     const handleStartRecording = async () => {
+        if (minutes === 0 && seconds === 0) {
+            logger.log('[ACTION] - Timer has expired. Unable to start recording.');
+            return;
+        };
         setIsSettingUp(true);
         const nextPermissionState = await requestPermission();
 
@@ -68,9 +77,7 @@ const Transcription = () => {
 
         const isTranscriptionStart = await startTranscribing();
 
-        if (isTranscriptionStart) {
-            startTimer();
-        }
+        if (isTranscriptionStart) startTimer();
 
         setIsSettingUp(false);
     };
@@ -78,6 +85,48 @@ const Transcription = () => {
     const handleStopRecording = () => {
         stopTranscribing();
         stopTimer();
+    };
+
+    const handleRawTranscript = async (action: string) => {
+        if (!isSessionActive) return;
+        if (isDownloading) logger.log('[ACTION] - Downloading transcript in progress');
+
+        if (action === 'copy') {
+            try {
+                await copy(rawTranscript);
+                logger.log('[ACTION] - Copied transcript');
+            } catch {
+                logger.log('[ACTION][COPY] - Error in copying transcript', String(copyError));
+            }
+            return;
+        }
+
+        if (action === 'save-md') {
+            logger.log('[ACTION][SAVE] - Save transcript in markdown file');
+            saveAsMarkdown(rawTranscript, 'transcript.md');
+            if (isError) logger.log('[ACTION][SAVE] - Error in saving markdown file', String(downloadError));
+            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully');
+            return;
+        }
+
+        if (action === 'save-txt') {
+            logger.log('[ACTION][SAVE] - Save transcript in text file');
+            saveAsTxt(rawTranscript, 'transcript.txt');
+            if (isError) logger.log('[ACTION][SAVE] - Error in saving text file', String(downloadError));
+            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully');
+            return;
+        }
+
+        if (action === 'save-json') {
+            logger.log('[ACTION][SAVE] - Save transcript in JSON file');
+            const transcriptData = {
+                segments: segments,
+                speakerLabels: speakerLabels
+            };
+            saveAsJson(transcriptData, 'transcript.json');
+            if (isError) logger.log('[ACTION][SAVE] - Error in saving JSON file', String(downloadError));
+            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully');
+        }
     };
 
     const isMobile = width < 768;
@@ -99,8 +148,9 @@ const Transcription = () => {
                                 <Transcript
                                     segments={segments}
                                     rawTranscript={rawTranscript}
-                                    socketState={socketState}
+                                    isRecording={isRecording}
                                     speakerLabels={speakerLabels}
+                                    isSessionActive={isSessionActive}
                                 />
                             </TabsContent>
 
@@ -159,48 +209,49 @@ const Transcription = () => {
                             </TabsContent>
                         </div>
 
-                        <div className='flex flex-row items-center justify-between h-[5vh]'>
-                            <Button variant='default' onClick={isRecording ? handleStopRecording : handleStartRecording}>
-                                {isRecording ? "Stop" : "Start"} Transcribing
-                                {isSettingUp && "..."}
-                            </Button>
-
-                            <Button variant='default' onClick={() => { console.log('[TEST]:', rawTranscript); }}>
-                                Raw transcript
-                            </Button>
-
-                            <span className='mr-8'>
-                                <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopSession} />
-                            </span>
-                        </div>
+                        <TranscriptActions
+                            isRecording={isRecording}
+                            isSessionActive={isSessionActive}
+                            isSettingUp={isSettingUp}
+                            minutes={minutes}
+                            seconds={seconds}
+                            onStartRecording={handleStartRecording}
+                            onStopRecording={handleStopRecording}
+                            stopTranscribing={stopTranscribing}
+                            onCopyTranscript={() => handleRawTranscript('copy')}
+                            onSaveMarkdown={() => handleRawTranscript('save-md')}
+                            onSaveTxt={() => handleRawTranscript('save-txt')}
+                            onSaveJson={() => handleRawTranscript('save-json')}
+                        />
 
                     </Tabs>
                     <div className='p-2'>
                         <Transcript
                             segments={segments}
                             rawTranscript={rawTranscript}
-                            socketState={socketState}
+                            isRecording={isRecording}
                             speakerLabels={speakerLabels}
+                            isSessionActive={isSessionActive}
                         />
                     </div>
                 </div>
             )}
 
             {isMobile && (
-                <div className='flex flex-row items-center justify-between h-[5vh]'>
-                    <Button variant='default' onClick={isRecording ? handleStopRecording : handleStartRecording}>
-                        {isRecording ? "Stop" : "Start"} Transcribing
-                        {isSettingUp && "..."}
-                    </Button>
-
-                    <Button variant='default' onClick={() => { console.log('[TEST]:', rawTranscript); }}>
-                        Raw transcript
-                    </Button>
-
-                    <span className='mr-8'>
-                        <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopSession} />
-                    </span>
-                </div>
+                <TranscriptActions
+                    isRecording={isRecording}
+                    isSessionActive={isSessionActive}
+                    isSettingUp={isSettingUp}
+                    minutes={minutes}
+                    seconds={seconds}
+                    onStartRecording={handleStartRecording}
+                    onStopRecording={handleStopRecording}
+                    stopTranscribing={stopTranscribing}
+                    onCopyTranscript={() => handleRawTranscript('copy')}
+                    onSaveMarkdown={() => handleRawTranscript('save-md')}
+                    onSaveTxt={() => handleRawTranscript('save-txt')}
+                    onSaveJson={() => handleRawTranscript('save-json')}
+                />
             )}
         </div>
     );
