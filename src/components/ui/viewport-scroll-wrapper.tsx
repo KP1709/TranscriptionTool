@@ -14,6 +14,7 @@ type ViewportScrollWrapperProps = {
     scrollToBottomButtonLabel?: string;
     scrollToBottomButtonClassName?: string;
     threshold?: number;
+    autoScrollEnabled?: boolean;
 };
 
 const ViewportScrollWrapper = ({
@@ -26,6 +27,7 @@ const ViewportScrollWrapper = ({
     scrollToBottomButtonLabel = "Scroll to latest",
     scrollToBottomButtonClassName,
     threshold = 80,
+    autoScrollEnabled = true,
 }: ViewportScrollWrapperProps) => {
     const viewportRef = useRef<HTMLDivElement | null>(null);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -62,14 +64,14 @@ const ViewportScrollWrapper = ({
     );
 
     useEffect(() => {
-        if (!isFollowingLatest) return;
+        if (!autoScrollEnabled || !isFollowingLatest) return;
 
         const frame = window.requestAnimationFrame(() => {
             scrollToBottom("auto");
         });
 
         return () => window.cancelAnimationFrame(frame);
-    }, [isFollowingLatest, scrollDependencies, scrollToBottom]);
+    }, [autoScrollEnabled, isFollowingLatest, scrollDependencies, scrollToBottom]);
 
     return (
         <div className={cn("relative", className)}>

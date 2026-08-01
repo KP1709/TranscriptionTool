@@ -5,7 +5,7 @@ import { Marker, MarkerContent } from "@/components/ui/marker";
 
 const LoggerConsole = () => {
     const [logs, setLogs] = useState<LoggerEntry[]>([]);
-    const [openLogIndices, setOpenLogIndices] = useState<Set<number>>(new Set());
+    const [openLogIndices, setOpenLogIndices] = useState<number[]>([]);
 
     useEffect(() => {
         return logger.subscribe(setLogs);
@@ -13,15 +13,11 @@ const LoggerConsole = () => {
 
     const toggleLogOpen = (index: number, isOpen: boolean) => {
         setOpenLogIndices((current) => {
-            const next = new Set(current);
-
             if (isOpen) {
-                next.add(index);
-            } else {
-                next.delete(index);
+                return current.includes(index) ? current : [...current, index];
             }
 
-            return next;
+            return current.filter((logIndex) => logIndex !== index);
         });
     };
 
@@ -43,7 +39,7 @@ const LoggerConsole = () => {
                 {logs.map((log, i) => (
                     <div key={i} className="min-w-0">
                         <details
-                            open={openLogIndices.has(i)}
+                            open={openLogIndices.includes(i)}
                             onToggle={(event) => toggleLogOpen(i, event.currentTarget.open)}
                             className="w-full max-w-full overflow-hidden rounded-md border border-dashed border-slate-300 p-2"
                         >
@@ -69,8 +65,9 @@ const LoggerConsole = () => {
             <ViewportScrollWrapper
                 className="w-full max-w-full h-[70vh] pr-2"
                 scrollAreaClassName="h-full"
-                showScrollToBottomButton
+                showScrollToBottomButton={false}
                 scrollDependencies={[logs.length]}
+                autoScrollEnabled={false}
             >
                 <LogDisplay />
             </ViewportScrollWrapper>
