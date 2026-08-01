@@ -22,7 +22,7 @@ After working with my team to intergrate AI note taking into our web application
 - 2 minute timer to prevent overrunning during development
 - Microphone permission check before starting transcription
 - Copy transcript into clipboard
-- Save transcript as a markdown file or text file
+- Save transcript as a markdown file, text file or json
 
 ## Speechmatics
 The live transcription service uses websockets which means there is an open connection which sends messages (pings) to the server and receives messages (pongs) from the server.
