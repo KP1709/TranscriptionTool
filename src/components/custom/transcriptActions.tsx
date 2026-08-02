@@ -49,17 +49,21 @@ const TranscriptActions = ({
     ];
 
     return (
-        <div className='flex flex-row items-center justify-between h-[5vh]'>
-            <Button variant='default' onClick={isRecording ? onStopRecording : onStartRecording}>
+        <div className='grid grid-cols-2 grid-rows-2 gap-1 h-18.75 justify-items-center'>
+            <Button
+                className='row-1 col-1 cursor-pointer'
+                variant='default'
+                onClick={isRecording ? onStopRecording : onStartRecording}>
                 {isRecording ? "Stop" : "Start"} Transcribing
                 {isSettingUp && "..."}
             </Button>
 
-            <ButtonGroup>
+            <ButtonGroup className={`row-1 col-2 ${!isSessionActive ? 'cursor-not-allowed' : ''}`}>
                 <Button
                     disabled={!isSessionActive}
                     variant='secondary'
-                    onClick={() => onCopyTranscript()}>
+                    onClick={() => onCopyTranscript()}
+                    className='cursor-pointer'>
                     Copy transcript
                 </Button>
                 <ButtonGroupSeparator />
@@ -68,7 +72,8 @@ const TranscriptActions = ({
                         <Button
                             disabled={!isSessionActive}
                             variant='secondary'
-                            size='icon'>
+                            size='icon'
+                            className='cursor-pointer'>
                             <DotsThreeIcon />
                         </Button>
                     } />
@@ -77,6 +82,7 @@ const TranscriptActions = ({
                             {dropdownItems.map((item, index) => (
                                 <React.Fragment key={item.label}>
                                     <DropdownMenuItem
+                                        className='cursor-pointer'
                                         onClick={() => item.onClick()}>
                                         {item.label}
                                     </DropdownMenuItem>
@@ -88,10 +94,10 @@ const TranscriptActions = ({
                 </DropdownMenu>
             </ButtonGroup>
 
-            <span className='mr-8'>
+            <span className='row-2 col-span-2 items-center'>
                 <CountdownTimer minutes={minutes} seconds={seconds} stopTranscribing={stopTranscribing} />
             </span>
-        </div>
+        </div >
     );
 };
 
