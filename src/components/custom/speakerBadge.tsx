@@ -1,15 +1,25 @@
 import { Badge } from "@/components/ui/badge";
 
-type Speaker = `S${number}` | 'UU';
+const SPEAKER_BORDER_COLORS = [
+    'border-cyan-500',
+    'border-rose-500',
+    'border-indigo-500',
+    'border-teal-500',
+    'border-red-500',
+    'border-lime-500',
+    'border-amber-500',
+    'border-violet-500',
+    'border-sky-500',
+    'border-fuchsia-500',
+];
 
-const SpeakerColourMap: Record<Speaker, string> = {
-    'S1': 'border-cyan-500',
-    'S2': 'border-rose-500',
-    'S3': 'border-indigo-500',
-    'S4': 'border-teal-500',
-    'S5': 'border-red-500',
-    'S6': 'border-lime-500',
-    'UU': 'border-slate-500'
+const getSpeakerBorderColor = (speakerCode: string) => {
+    if (speakerCode === 'UU') return 'border-slate-500';
+
+    const speakerNumber = Number.parseInt(speakerCode.match(/^S(\d+)$/)?.[1] ?? '', 10);
+    if (!Number.isFinite(speakerNumber)) return 'border-slate-500';
+
+    return SPEAKER_BORDER_COLORS[Math.abs(speakerNumber) % SPEAKER_BORDER_COLORS.length];
 };
 
 export const getDefaultSpeakerLabel = (speakerCode: string) => {
@@ -29,7 +39,7 @@ export const getSpeakerDisplayName = (speakerCode: string, customLabel?: string)
 
 const SpeakerBadge = ({ speakerCode, customLabel }: { speakerCode: string; customLabel?: string; }) => (
     <div className="flex items-center gap-3 mb-3">
-        <Badge className={`text-[12px] bg-transparent  text-slate-950 border-2 p-3 ${SpeakerColourMap[speakerCode as Speaker]}`}>
+        <Badge className={`text-[12px] bg-transparent text-slate-950 border-2 p-3 ${getSpeakerBorderColor(speakerCode)}`}>
             {getSpeakerDisplayName(speakerCode, customLabel)}
         </Badge>
 
