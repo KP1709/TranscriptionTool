@@ -62,7 +62,6 @@ const Speaker = ({ noSpeakers, segments, setSpeakerLabels, speakerLabels }: Spea
                     <Input
                         value={speakerLabels[speakerCode] ?? ''}
                         onChange={(event) => updateSpeakerLabel(speakerCode, event.target.value)}
-                        placeholder={getDefaultSpeakerLabel(speakerCode)}
                     />
                 </label>
             ))}
