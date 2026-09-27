@@ -55,7 +55,7 @@ const Speaker = ({ noSpeakers, segments, setSpeakerLabels, speakerLabels }: Spea
     };
 
     return (
-        <ScrollArea className='h-[60vh]'>
+        <ScrollArea className='h-[70vh]'>
             {speakerCodes.map((speakerCode) => (
                 <label key={speakerCode} className="flex flex-col py-2">
                     <span className="text-sm font-medium">{getDefaultSpeakerLabel(speakerCode)}</span>
