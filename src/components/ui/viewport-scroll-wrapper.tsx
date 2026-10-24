@@ -11,7 +11,8 @@ type ViewportScrollWrapperProps = {
     scrollDependencies?: readonly unknown[];
     onViewportScroll?: React.UIEventHandler<HTMLDivElement>;
     showScrollToBottomButton?: boolean;
-    scrollToBottomButtonLabel?: string;
+    scrollToBottomButtonLabel?: string | React.ReactNode;
+    scrollToBottomButtonLabelAriaLabel?: string;
     scrollToBottomButtonClassName?: string;
     threshold?: number;
     autoScrollEnabled?: boolean;
@@ -28,6 +29,7 @@ const ViewportScrollWrapper = ({
     scrollToBottomButtonClassName,
     threshold = 80,
     autoScrollEnabled = true,
+    scrollToBottomButtonLabelAriaLabel = ''
 }: ViewportScrollWrapperProps) => {
     const viewportRef = useRef<HTMLDivElement | null>(null);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -88,8 +90,9 @@ const ViewportScrollWrapper = ({
                 <Button
                     type="button"
                     variant="secondary"
-                    className={cn("absolute bottom-4 right-4 rounded-full shadow-lg", scrollToBottomButtonClassName)}
+                    className={cn("absolute bottom-4 right-4 rounded-full shadow-lg cursor-pointer", scrollToBottomButtonClassName)}
                     onClick={() => scrollToBottom("smooth")}
+                    aria-label={scrollToBottomButtonLabelAriaLabel}
                 >
                     {scrollToBottomButtonLabel}
                 </Button>

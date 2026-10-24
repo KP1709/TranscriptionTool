@@ -1,5 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 
+import {
+    CheckCircleIcon,
+    ClipboardTextIcon,
+    ClockCountdownIcon,
+    DownloadSimpleIcon,
+    FloppyDiskIcon,
+    MicrophoneSlashIcon,
+    WarningCircleIcon
+} from "@phosphor-icons/react";
+
 import LoggerConsole from "./logger";
 import Speaker from "./TabScreens/speaker";
 import Settings from "./TabScreens/settings";
@@ -59,19 +69,19 @@ const Transcription = () => {
 
     const handleStartRecording = async () => {
         if (minutes === 0 && seconds === 0) {
-            logger.log('[ACTION] - Timer has expired', 'Unable to start recording');
+            logger.log('[ACTION] - Timer has expired', 'Unable to start recording', <ClockCountdownIcon />);
             return;
         };
         setIsSettingUp(true);
         const nextPermissionState = await requestPermission();
 
         if (nextPermissionState !== 'granted') {
-            logger.log('[AUDIO] - Microphone permission not granted');
+            logger.log('[AUDIO] - Microphone permission not granted', '', <MicrophoneSlashIcon />);
             return;
         }
 
         if (error) {
-            logger.log('[AUDIO] - Microphone error', `${error}`);
+            logger.log('[AUDIO] - Microphone error', `${error}`, <MicrophoneSlashIcon />);
             return;
         }
 
@@ -89,43 +99,43 @@ const Transcription = () => {
 
     const handleRawTranscript = async (action: string) => {
         if (!isSessionActive) return;
-        if (isDownloading) logger.log('[ACTION] - Downloading transcript in progress');
+        if (isDownloading) logger.log('[ACTION] - Downloading transcript in progress', '', <DownloadSimpleIcon />);
 
         if (action === 'copy') {
             try {
                 await copy(rawTranscript);
-                logger.log('[ACTION] - Copied transcript');
+                logger.log('[ACTION] - Copied transcript', '', <ClipboardTextIcon />);
             } catch {
-                logger.log('[ACTION][COPY] - Error in copying transcript', String(copyError));
+                logger.log('[ACTION][COPY] - Error in copying transcript', String(copyError), <WarningCircleIcon />);
             }
             return;
         }
 
         if (action === 'save-md') {
-            logger.log('[ACTION][SAVE] - Save transcript in markdown file');
+            logger.log('[ACTION][SAVE] - Save transcript in markdown file', '', <FloppyDiskIcon />);
             saveAsMarkdown(rawTranscript, 'transcript.md');
-            if (isError) logger.log('[ACTION][SAVE] - Error in saving markdown file', String(downloadError));
-            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully');
+            if (isError) logger.log('[ACTION][SAVE] - Error in saving markdown file', String(downloadError), <WarningCircleIcon />);
+            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully', '', <CheckCircleIcon />);
             return;
         }
 
         if (action === 'save-txt') {
-            logger.log('[ACTION][SAVE] - Save transcript in text file');
+            logger.log('[ACTION][SAVE] - Save transcript in text file', '', <FloppyDiskIcon />);
             saveAsTxt(rawTranscript, 'transcript.txt');
-            if (isError) logger.log('[ACTION][SAVE] - Error in saving text file', String(downloadError));
-            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully');
+            if (isError) logger.log('[ACTION][SAVE] - Error in saving text file', String(downloadError), <WarningCircleIcon />);
+            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully', '', <CheckCircleIcon />);
             return;
         }
 
         if (action === 'save-json') {
-            logger.log('[ACTION][SAVE] - Save transcript in JSON file');
+            logger.log('[ACTION][SAVE] - Save transcript in JSON file', '', <FloppyDiskIcon />);
             const transcriptData = {
                 segments: segments,
                 speakerLabels: speakerLabels
             };
             saveAsJson(transcriptData, 'transcript.json');
-            if (isError) logger.log('[ACTION][SAVE] - Error in saving JSON file', String(downloadError));
-            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully');
+            if (isError) logger.log('[ACTION][SAVE] - Error in saving JSON file', String(downloadError), <WarningCircleIcon />);
+            if (!isDownloading) logger.log('[ACTION][SAVE] - Transcript saved successfully', '', <CheckCircleIcon />);
         }
     };
 

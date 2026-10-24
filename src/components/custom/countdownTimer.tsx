@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { logger } from "@/lib/logger";
+import { TimerIcon } from "@phosphor-icons/react";
 
 type CountdownTimerType = {
     minutes: number;
@@ -11,7 +12,7 @@ const CountdownTimer = ({ minutes, seconds, stopTranscribing }: CountdownTimerTy
     useEffect(() => {
         if (minutes === 0 && seconds === 0) {
             stopTranscribing();
-            logger.log('[AUDIO] - Recording stopped - timer finished');
+            logger.log('[AUDIO] - Recording stopped - timer finished', '', <TimerIcon />);
         }
     }, [minutes, seconds, stopTranscribing]);
 

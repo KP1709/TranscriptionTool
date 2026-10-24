@@ -1,6 +1,7 @@
 export type LoggerEntry = {
     message: string;
     secondary?: string[];
+    icon?: React.ReactNode;
 };
 
 type Listener = (logs: LoggerEntry[]) => void;
@@ -17,8 +18,8 @@ class Logger {
         });
     }
 
-    log(message: string, secondary?: string | string[]) {
-        const entry: LoggerEntry = { message };
+    log(message: string, secondary?: string | string[], icon?: React.ReactNode) {
+        const entry: LoggerEntry = { message, icon };
 
         if (secondary) {
             entry.secondary = Array.isArray(secondary) ? secondary : [secondary];

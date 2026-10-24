@@ -3,6 +3,17 @@ import { useRealtimeTranscription, useRealtimeEventListener, } from "@speechmati
 import { usePCMAudioRecorderContext, usePCMAudioListener, } from "@speechmatics/browser-audio-input-react";
 import { logger } from "@/lib/logger";
 import type { TranscriptSegment, TranscriptSettingsType } from "@/types";
+import {
+    CheckCircleIcon,
+    InfoIcon,
+    PlayCircleIcon,
+    PlugsConnectedIcon,
+    PlugsIcon,
+    StopCircleIcon,
+    UserSoundIcon,
+    WarningIcon,
+    XCircleIcon
+} from "@phosphor-icons/react";
 
 const SAMPLE_RATE = 16000;
 
@@ -35,12 +46,13 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
 
     useEffect(() => {
         if (!socketState) return;
-        logger.log('[SPEECHMATICS][SocketState]', `Status:${socketState}`);
+        const icon = socketState === 'open' ? <PlugsConnectedIcon /> : <PlugsIcon />;
+        logger.log('[SPEECHMATICS][SocketState]', `Status:${socketState}`, icon);
     }, [socketState]);
 
     useEffect(() => {
         if (!sessionId) return;
-        logger.log('[SPEECHMATICS][SessionId]', `Session id:${sessionId}`);
+        logger.log('[SPEECHMATICS][SessionId]', `Session id:${sessionId}`, <PlugsConnectedIcon />);
     }, [sessionId]);
 
     useRealtimeEventListener("receiveMessage", (event) => {
@@ -49,22 +61,22 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
 
         switch (message.message) {
             case "RecognitionStarted":
-                logger.log("[SPEECHMATICS][RecognitionStarted]");
+                logger.log("[SPEECHMATICS][RecognitionStarted]", '', <PlugsConnectedIcon />);
                 break;
             case "AudioAdded":
                 // logger.log("[SPEECHMATICS][AudioAdded]");
                 break;
             case "Error":
-                logger.log("[SPEECHMATICS][Error]", `${message.reason}`);
+                logger.log("[SPEECHMATICS][Error]", `${message.reason}`, <XCircleIcon />);
                 break;
             case "Warning":
-                logger.log("[SPEECHMATICS][Warning]", `${message.reason}`);
+                logger.log("[SPEECHMATICS][Warning]", `${message.reason}`, <WarningIcon />);
                 break;
             case "Info":
-                logger.log("[SPEECHMATICS][Info]", `${message.reason}`);
+                logger.log("[SPEECHMATICS][Info]", `${message.reason}`, <InfoIcon />);
                 break;
             case "EndOfTranscript":
-                logger.log("[SPEECHMATICS][EndOfTranscript]");
+                logger.log("[SPEECHMATICS][EndOfTranscript]", '', <InfoIcon />);
                 break;
 
             case "AddTranscript":
@@ -95,7 +107,7 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
                     }
 
                     // Speaker changed -> start a new turn.
-                    logger.log("[SPEECHMATICS][AddTranscript]", `Detected speaker change: ${speaker}`);
+                    logger.log("[SPEECHMATICS][AddTranscript]", `Detected speaker change: ${speaker}`, <UserSoundIcon />);
                     return [...clearedSegments, { speaker, text, id: crypto.randomUUID(), isFinal: true, partialText: null }];
                 });
                 break;
@@ -127,7 +139,7 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
     const start = useCallback(async () => {
         try {
             if (isRecording) {
-                logger.log('[AUDIO] - Recording already active');
+                logger.log('[AUDIO] - Recording already active', '', <InfoIcon />);
                 return true;
             }
 
@@ -140,10 +152,10 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
                 const { jwt } = await response.json();
 
                 if (!jwt) {
-                    logger.log('[SERVER][Token]', 'Token not valid or generated');
+                    logger.log('[SERVER][Token]', 'Token not valid or generated', <XCircleIcon />);
                     return false;
                 }
-                logger.log('[SERVER][Token]', 'Token generated successfully');
+                logger.log('[SERVER][Token]', 'Token generated successfully', <CheckCircleIcon />);
 
                 await startTranscription(jwt, {
                     transcription_config: {
@@ -169,39 +181,39 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
                     },
                 });
 
-                logger.log('[SPEECHMATICS] - Transcription session started');
+                logger.log('[SPEECHMATICS] - Transcription session started', '', <PlugsConnectedIcon />);
             }
 
             await startRecording({
                 recordingOptions: { sampleRate: SAMPLE_RATE }
             });
 
-            logger.log("[AUDIO] - Recording started");
+            logger.log("[AUDIO] - Recording started", '', <PlayCircleIcon />);
             return true;
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : String(err);
-            logger.log('[SPEECHMATICS] - Transcription failed', errorMessage);
+            logger.log('[SPEECHMATICS] - Transcription failed', errorMessage, <XCircleIcon />);
             return false;
         }
     }, [sessionId, isRecording, startTranscription, startRecording, liveTranscriptSettings]);
 
     const stop = useCallback(async () => {
         if (!isRecording) {
-            logger.log('[AUDIO] - Recording already stopped');
+            logger.log('[AUDIO] - Recording already stopped', '', <InfoIcon />);
             return;
         }
 
         stopRecording();
-        logger.log("[AUDIO] - Recording stopped");
+        logger.log("[AUDIO] - Recording stopped", '', <StopCircleIcon />);
     }, [isRecording, stopRecording]);
 
     const stopSession = useCallback(async () => {
         stopRecording();
-        logger.log("[AUDIO] - Recording stopped");
+        logger.log("[AUDIO] - Recording stopped", '', <StopCircleIcon />);
 
         await stopTranscription()
-            .then(() => logger.log('[SPEECHMATICS] - Transcription session stopped successfully'))
-            .catch(() => logger.log('[SPEECHMATICS] - Transcription session not stopped successfully'));
+            .then(() => logger.log('[SPEECHMATICS] - Transcription session stopped successfully', '', <CheckCircleIcon />))
+            .catch(() => logger.log('[SPEECHMATICS] - Transcription session not stopped successfully', '', <XCircleIcon />));
     }, [stopRecording, stopTranscription]);
 
     return {
