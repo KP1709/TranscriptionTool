@@ -1,25 +1,24 @@
 # Transcription Tool
-[![Netlify Status](https://api.netlify.com/api/v1/badges/ba1b0c0e-1172-4c55-8bd7-39827e12ae57/deploy-status)](https://app.netlify.com/projects/kareenapatel-transcriptiontool/deploys)
 
 ## ⌨️ Tech stack
 React / Shadcn / Tailwind / Speechmatics / pnpm / Express (Backend) / Render (Backend)
 
 ## 🍼 Introduction
-After working with my team to intergrate AI note taking into our web application, I wanted to explore other transcription services. I found Speechmatics and produced a simple demo to explore the features the service has to offer.  
+After working with my team to integrate AI note-taking into our web application, I wanted to explore other transcription services. I found Speechmatics and have produced a simple demo to explore its features.  
   
-⚠️ This repo does not have a live demo attached due to using Speechmatics free tier which has limits. If you're interested in running this code locally, you will need to create a Speechmatics account, generate an API key and inject it into the server code. To run the demo, run the server script along side localhost from package.json.
+⚠️ This repo does not have a live demo attached due to using Speechmatics free tier, which has limits. If you're interested in running this code locally, you will need to create a Speechmatics account, generate an API key and inject it into the server code. To run the demo, run the server script alongside localhost from package.json.
 
 ## 🛠️ Features
-- View speech-to-text transcribing in real time
+- View speech-to-text transcription in real time
 - Configure transcription settings
-    -  Filter out filler words (disfluencies) e.g. um, err
+    -  Filter out filler words (disfluencies), e.g. um, err
     -  Display partial transcription (the words it thinks it has detected before adding to the main transcript)
     -  Adjust number of speakers, delays, speaker sensitivity and curse word (profanity) visibility
     -  Simple logging to show websocket messages and changes
 - Speaker diarization - detecting when a speaker changes
     - Adjust speaker labels
 - Mobile and desktop views
-- 2 minute timer to prevent overrunning during development
+- 2-minute timer to prevent overrunning during development
 - Microphone permission check before starting transcription
 - Copy transcript into clipboard
 - Save transcript as a markdown file, text file or json
@@ -29,9 +28,9 @@ The live transcription service uses websockets which means there is an open conn
 The logic for recording, transcribing and detecting server messages are provided by the Speechmatics JS SDKs.
 
 ## Backend / Render
-Using Express, a small script was created to generate a JWT which was passed to the frontend to start transcribing.  
-This uses Speechmatics' auth library where the API key, transcription service type and time to live are set to produce a JWT. 
-In this repo, the server code exists to run the app locally. To host the server code in Render, a separate repo needed to be created and the environment variables injected when deploying the backend. 
+Express was used to create a small script to generate a JWT, which was injected into the frontend to start transcribing.  
+This uses Speechmatics' auth library where the API key, transcription service type and time-to-live are set. 
+The server code is available to run the app locally. To host the server code on Render, a separate repo exists. Environment variables are injected.
 
 ## 📚 Resources
 - Speechmatics - https://www.speechmatics.com/
@@ -40,8 +39,8 @@ In this repo, the server code exists to run the app locally. To host the server 
 - Render - https://render.com/ 
 
 ## 🤖 AI chats
-ChatGPT was used mostly to help set up the transcription service including areas like speaker diarization, intergrating the JS SDKs and hosting the server code on Render. 
-Here are some example chat. These were sometimes used as starting points to intergrate into the current code
+ChatGPT helped set up the transcription service, including speaker diarization, integrating the JS SDKs and hosting the server code on Render. 
+Here are some example chats. These were sometimes used as starting points to integrate into the current code
 - https://chatgpt.com/s/t_6a52787b0ba48191be11f136f54074cd <-- Diagnosis
 - https://chatgpt.com/s/t_6a529eb6b4708191b91ac477a140a819 <-- Speaker diarization
 - https://chatgpt.com/s/t_6a529e9b8fbc81919372a62268f0c883 <-- Transcribing 
