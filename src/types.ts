@@ -13,5 +13,6 @@ export type TranscriptSegment = {
     id: string;
     speaker: string;
     text: string;
+    timestamp: number;
     partialText?: string | null;
 };

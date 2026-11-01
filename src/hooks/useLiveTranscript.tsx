@@ -108,7 +108,14 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
 
                     // Speaker changed -> start a new turn.
                     logger.log("[SPEECHMATICS][AddTranscript]", `Detected speaker change: ${speaker}`, <UserSoundIcon />);
-                    return [...clearedSegments, { speaker, text, id: crypto.randomUUID(), isFinal: true, partialText: null }];
+                    return [...clearedSegments, {
+                        speaker,
+                        text,
+                        timestamp: message.metadata.start_time,
+                        id: crypto.randomUUID(),
+                        isFinal: true,
+                        partialText: null
+                    }];
                 });
                 break;
 

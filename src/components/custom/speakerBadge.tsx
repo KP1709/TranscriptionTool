@@ -37,13 +37,15 @@ export const getSpeakerDisplayName = (speakerCode: string, customLabel?: string)
     return getDefaultSpeakerLabel(speakerCode);
 };
 
-const SpeakerBadge = ({ speakerCode, customLabel }: { speakerCode: string; customLabel?: string; }) => (
+const SpeakerBadge = ({ speakerCode, customLabel, timestamp }: { speakerCode: string; customLabel?: string; timestamp: string; }) => (
     <div className="flex items-center gap-3 mb-3">
         <Badge className={`text-[12px] bg-transparent text-slate-950 border-2 p-3 ${getSpeakerBorderColor(speakerCode)}`}>
             {getSpeakerDisplayName(speakerCode, customLabel)}
         </Badge>
 
         <div className="h-px flex-1 bg-border" />
+
+        <span className="text-sm text-muted-foreground">{timestamp}</span>
     </div>
 );
 

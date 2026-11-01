@@ -11,6 +11,13 @@ type TranscriptProps = {
     speakerLabels: Record<string, string>;
 };
 
+const formatTimestamp = (timestamp: number) => {
+    const totalSeconds = Math.floor(timestamp);
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+    const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+};
+
 const Transcript = ({ segments, rawTranscript, isRecording, isSessionActive, speakerLabels }: TranscriptProps) => {
     const hasTranscriptStarted = segments.length > 0 || rawTranscript.trim().length > 0;
     const shouldShowStoppedMessage = !isRecording && isSessionActive && hasTranscriptStarted;
@@ -32,7 +39,7 @@ const Transcript = ({ segments, rawTranscript, isRecording, isSessionActive, spe
 
                     {rawTranscript && segments.map((segment, index) => (
                         <div key={segment.id} className="mb-4">
-                            <SpeakerBadge speakerCode={segment.speaker} customLabel={speakerLabels[segment.speaker]} />
+                            <SpeakerBadge speakerCode={segment.speaker} customLabel={speakerLabels[segment.speaker]} timestamp={formatTimestamp(segment.timestamp)} />
                             <p>
                                 <span>{segment.text}</span>
                                 {index === segments.length - 1 && segment.partialText && (

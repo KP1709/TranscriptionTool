@@ -19,6 +19,7 @@ After working with my team to integrate AI note-taking into our web application,
     - Adjust speaker labels
 - Mobile and desktop views
 - 2-minute timer to prevent overrunning during development
+    - Timestamp shown for each transcript segment
 - Microphone permission check before starting transcription
 - Copy transcript into clipboard
 - Save transcript as a markdown file, text file or json
