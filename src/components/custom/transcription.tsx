@@ -10,7 +10,7 @@ import {
     WarningCircleIcon
 } from "@phosphor-icons/react";
 
-import LoggerConsole from "./logger";
+import LoggerConsole from "./TabScreens/logger";
 import Speaker from "./TabScreens/speaker";
 import Settings from "./TabScreens/settings";
 import Transcript from "./transcript";
