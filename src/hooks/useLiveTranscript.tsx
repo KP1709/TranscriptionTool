@@ -79,7 +79,7 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
                 logger.log("[SPEECHMATICS][EndOfTranscript]", '', <InfoIcon />);
                 break;
 
-            case "AddTranscript":
+            case "AddTranscript": {
                 const detectedSpeaker =
                     message.results?.[0]?.alternatives?.[0]?.speaker;
 
@@ -118,8 +118,9 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
                     }];
                 });
                 break;
+            }
 
-            case "AddPartialTranscript":
+            case "AddPartialTranscript": {
                 setSegments(prev => {
                     if (prev.length === 0) return prev;
                     const lastSegment = prev.length - 1;
@@ -133,6 +134,7 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
                     }));
                 });
                 break;
+            }
         }
     });
 
@@ -202,7 +204,20 @@ const useLiveTranscript = ({ ...liveTranscriptSettings }: TranscriptSettingsType
             logger.log('[SPEECHMATICS] - Transcription failed', errorMessage, <XCircleIcon />);
             return false;
         }
-    }, [sessionId, isRecording, startTranscription, startRecording, liveTranscriptSettings]);
+    }, [
+        sessionId,
+        isRecording,
+        startTranscription,
+        startRecording,
+        domain,
+        isFilterWordsRemoved,
+        model,
+        maxDelay,
+        isFilterWordsRemoved,
+        noSpeakers,
+        speakerSensitivity,
+        isPartialTranscriptShown
+    ]);
 
     const stop = useCallback(async () => {
         if (!isRecording) {

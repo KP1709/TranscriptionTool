@@ -65,7 +65,7 @@ const Transcription = () => {
 
     useEffect(() => {
         reset();
-    }, []);
+    }, [reset]);
 
     const handleStartRecording = async () => {
         if (minutes === 0 && seconds === 0) {
